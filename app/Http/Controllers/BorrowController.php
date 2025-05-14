@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Borrow;
-use App\Http\Requests\StoreBorrowRequest;
-use App\Http\Requests\UpdateBorrowRequest;
+use Illuminate\Http\Request;
 
 class BorrowController extends Controller
 {
@@ -13,7 +12,8 @@ class BorrowController extends Controller
      */
     public function index()
     {
-        //
+        $borrows = Borrow::all();
+        return view('borrows.index', compact('borrows'));
     }
 
     /**
@@ -21,15 +21,28 @@ class BorrowController extends Controller
      */
     public function create()
     {
-        //
+        return view('borrows.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(\Illuminate\Http\Request $request)
+    public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            // Add validation rules based on your Borrow model
+        ]);
+
+        $borrow = Borrow::create($validated);
+
+        if ($request->is('api/*')) {
+            // Request is coming from API route
+            return response()->json([
+                'borrow' => $borrow,
+            ]);;
+        }
+
+        return redirect()->route('borrows.index')->with('success', 'Borrow created successfully.');
     }
 
     /**
@@ -37,7 +50,7 @@ class BorrowController extends Controller
      */
     public function show(Borrow $borrow)
     {
-        //
+        return view('borrows.show', compact('borrow'));
     }
 
     /**
@@ -45,15 +58,28 @@ class BorrowController extends Controller
      */
     public function edit(Borrow $borrow)
     {
-        //
+        return view('borrows.edit', compact('borrow'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(\Illuminate\Http\Request $request, Borrow $borrow)
+    public function update(Request $request, Borrow $borrow)
     {
-        //
+        $validated = $request->validate([
+            // Add validation rules based on your Borrow model
+        ]);
+
+        $borrow->update($validated);
+
+        if ($request->is('api/*')) {
+            // Request is coming from API route
+            return response()->json([
+                'borrow' => $borrow,
+            ]);;
+        }
+
+        return redirect()->route('borrows.index')->with('success', 'Borrow updated successfully.');
     }
 
     /**
@@ -61,6 +87,8 @@ class BorrowController extends Controller
      */
     public function destroy(Borrow $borrow)
     {
-        //
+        $borrow->delete();
+
+        return redirect()->route('borrows.index')->with('success', 'Borrow deleted successfully.');
     }
 }

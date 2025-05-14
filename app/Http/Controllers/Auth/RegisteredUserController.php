@@ -27,7 +27,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -55,6 +55,13 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        if ($request->is('api/*')) {
+            // Request is coming from API route
+            return response()->json([
+                'user' => $user,
+            ]);;
+        }
+        // Request is coming from web route
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
