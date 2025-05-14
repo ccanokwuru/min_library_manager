@@ -21,6 +21,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
+        'address',
+        'phone',
+        'last_seen',
     ];
 
     /**
@@ -44,5 +48,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function borrows()
+    {
+        return $this->hasMany(Borrow::class);
     }
 }
